@@ -32,15 +32,39 @@ class AnswerController extends Controller
      */
     public function store(Request $request, Question $question): RedirectResponse
     {
-        $order = count($question->answers);
+        $order = DB::table('answers')->where('question_id', $question->id)
+            ->orderBy('order','desc')
+            ->limit(1)
+            ->get()
+            ->all();
 
-        Answer::create([
+        $order = $order[0]->order;
+
+        $newOrder = $order + 1;
+        $answer = Answer::create([
             'question_id' => $question->id,
             'description' => $request->description,
-            'order' => ($order + 1)
+            'order' => $newOrder
         ]);
 
-        DB::table('answers')->where('order', '>=', ($order+1))->orderBy('order', 'asc')->update(['order' => DB::raw('order + 1')]);
+        // Reorder the rest of the rows
+        $rowsToUpdate = DB::table('answers')
+            ->where(function ($query) use ($newOrder) {
+                $query->where('order', '>=', $newOrder)
+                    ->orWhereNull('order');
+            })
+            ->where('id', '!=', $answer->id)
+            ->orderBy('order', 'asc')
+            ->get();
+
+        $nextValue = $order + 1;
+        foreach ($rowsToUpdate as $rowToUpdate) {
+            DB::table('answers')
+                ->where('id', $rowToUpdate->id)
+                ->update(['order' => $nextValue]);
+            $nextValue++;
+        }
+
 
 
         return redirect()->route('questions.edit', $question->id);

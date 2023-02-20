@@ -75,13 +75,11 @@ class QuestionController extends Controller
     public function updateOrder(Request $request, Question $question){
         $answer = $request->get('answers');
         $order = $answer['order'];
-        DB::table('answers')->where('id', $answer['answer_id'])->update(['order' => $answer['order']]);
-//        DB::table('answers')
-//            ->where('order', '>=', ($order+1))
-//            ->orderBy('order', 'asc')
-//            ->update(['order' => DB::raw('order + 1')]);
+        DB::table('answers')
+            ->where('id', $answer['answer_id'])
+            ->update(['order' => $answer['order']]);
+
         // Reorder the rest of the rows
-// Reorder the rest of the rows
         $rowsToUpdate = DB::table('answers')
             ->where(function ($query) use ($order) {
                 $query->where('order', '>=', $order)
