@@ -10,7 +10,6 @@
                     <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                         Question: {{$question->title}} results are:
                     </h2>
-
                     <table class="table max-w-5xl">
                         <thead>
                             <tr>
@@ -26,14 +25,10 @@
                                     <td @if($row->selected) class="bg-green-500 text-black" @endif>{{\Illuminate\Support\Str::limit($row->description,40)}}</td>
                                     <td @if($row->selected) class="bg-green-500 text-black" @endif>{{$row->answer_count}} antwoord(en) gegeven</td>
                                 </tr>
-
                             @endforeach
                         </tbody>
                     </table>
-
-
                 </div>
-
             </div>
         </div>
     </div>
