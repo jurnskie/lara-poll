@@ -56,10 +56,10 @@
                                             <td>
                                                 <form action="{{route('questions.order.answers',$question->id)}}" method="post">
                                                     @csrf
-                                                    <input type="number" name="answers[{{$answer->id}}][order]" class="input w-full max-w-xs" value="{{$answer->order}}">
-                                                    <input type="hidden" name="answers[{{$answer->id}}][answer_id]" class="input w-full max-w-xs" value="{{$answer->id}}">
-                                                    <input type="hidden" name="answers[{{$answer->id}}][description]" class="input w-full max-w-xs" value="{{$answer->description}}">
-                                                    <input type="hidden" name="answers[{{$answer->id}}][question_id]" class="input w-full max-w-xs" value="{{$question->id}}">
+                                                    <input type="number" name="answers[order]" class="input w-full max-w-xs" value="{{$answer->order}}">
+                                                    <input type="hidden" name="answers[answer_id]" class="input w-full max-w-xs" value="{{$answer->id}}">
+                                                    <input type="hidden" name="answers[description]" class="input w-full max-w-xs" value="{{$answer->description}}">
+                                                    <input type="hidden" name="answers[question_id]" class="input w-full max-w-xs" value="{{$question->id}}">
                                                     <input type="submit" class="btn btn-success mt-5" value="Update answers">
                                                 </form>
                                             </td>

@@ -7,6 +7,7 @@ use App\Models\Question;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class AnswerController extends Controller
 {
@@ -38,6 +39,9 @@ class AnswerController extends Controller
             'description' => $request->description,
             'order' => ($order + 1)
         ]);
+
+        DB::table('answers')->where('order', '>=', ($order+1))->orderBy('order', 'asc')->update(['order' => DB::raw('order + 1')]);
+
 
         return redirect()->route('questions.edit', $question->id);
 

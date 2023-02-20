@@ -8,6 +8,7 @@ use App\Models\Question;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class QuestionController extends Controller
 {
@@ -72,16 +73,31 @@ class QuestionController extends Controller
     }
 
     public function updateOrder(Request $request, Question $question){
-        $answers = $request->get('answers');
+        $answer = $request->get('answers');
+        $order = $answer['order'];
+        DB::table('answers')->where('id', $answer['answer_id'])->update(['order' => $answer['order']]);
+//        DB::table('answers')
+//            ->where('order', '>=', ($order+1))
+//            ->orderBy('order', 'asc')
+//            ->update(['order' => DB::raw('order + 1')]);
+        // Reorder the rest of the rows
+// Reorder the rest of the rows
+        $rowsToUpdate = DB::table('answers')
+            ->where(function ($query) use ($order) {
+                $query->where('order', '>=', $order)
+                    ->orWhereNull('order');
+            })
+            ->where('id', '!=', $answer['answer_id'])
+            ->orderBy('order', 'asc')
+            ->get();
 
-        Answer::upsert(collect($answers)->map(function($item)  {
-            return [
-                'id' => $item['answer_id'],
-                'description' => $item['description'],
-                'order'=>$item['order'],
-                'question_id' => $item['question_id']
-            ];
-        })->toArray(), ['id','description','question_id'], ['order']);
+        $nextValue = $order + 1;
+        foreach ($rowsToUpdate as $rowToUpdate) {
+            DB::table('answers')
+                ->where('id', $rowToUpdate->id)
+                ->update(['order' => $nextValue]);
+            $nextValue++;
+        }
 
         return redirect()->route('questions.edit', $question->id);
 
